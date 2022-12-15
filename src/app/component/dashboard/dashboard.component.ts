@@ -26,7 +26,8 @@ export class DashboardComponent implements OnInit {
   }
   getAllTask() {
     this.crudService.getAllTasks().subscribe(res => {
-      this.taskArr = res;
+      this.taskArr = res.sort((a:any,b:any)=>
+      {return a.isDone - b.isDone} );
     }, err => {
       alert("Unable to get list of tasks");
     });
@@ -42,6 +43,23 @@ export class DashboardComponent implements OnInit {
     })
   }
 
+  changeTaskStatus(etask:Task){
+    this.taskObj=etask
+    if(this.taskObj.isDone)
+    {
+      this.taskObj.isDone=false;
+    }
+    else
+    {
+      this.taskObj.isDone=true;
+    }
+    this.crudService.editTask(this.taskObj).subscribe(res => {
+      this.ngOnInit();
+    }, err=> {
+      alert("Failed to update task");
+    })
+  }
+
   editTask() {
     this.taskObj.task_name = this.editTaskValue;
     this.crudService.editTask(this.taskObj).subscribe(res => {
@@ -50,6 +68,7 @@ export class DashboardComponent implements OnInit {
       alert("Failed to update task");
     })
   }
+
 
   deleteTask(etask : Task) {
     this.crudService.deleteTask(etask).subscribe(res => {
